@@ -6,6 +6,11 @@ URL = os.environ.get("SEARXNG_URL", "http://localhost:8000")
 mcp = FastMCP("Searxng")
 
 
+@mcp.tool
+def hi():
+    return "hello world"
+
+
 def main():
     mcp.run()
 
