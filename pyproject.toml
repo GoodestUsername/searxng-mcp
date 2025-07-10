@@ -9,7 +9,7 @@ dependencies = [
     "fastmcp>=2.10.1",
     "fastmp>=0.1.0",
     "httpx",
-
+    "typer>=0.16.0",
 ]
 
 [tool.uv]
