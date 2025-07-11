@@ -2,6 +2,7 @@ FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
 
 WORKDIR /app
 
+ENV PORT=8000
 ENV UV_COMPILE_BYTECODE=1
 ENV UV_LINK_MODE=copy
 
