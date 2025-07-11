@@ -15,6 +15,8 @@ class HTTPTransportTypes(Enum):
 
 def main():
     api_url = os.environ.get("SEARXNG_URL", "http://localhost:8181")
+    default_path = os.environ.get("PATH", "searxng")
+
     mcp = create_mcp_server(api_url)
 
     app = typer.Typer()
@@ -46,7 +48,7 @@ def main():
                 host=host,
                 port=port,
                 log_level=log_level,
-                path=path,
+                path=f"/{path if path != None else default_path}",
                 stateless_http=stateless_http,
             )
         )
