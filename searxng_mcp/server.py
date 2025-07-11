@@ -1,19 +1,11 @@
-import os
-
 from fastmcp import FastMCP
-
-URL = os.environ.get("SEARXNG_URL", "http://localhost:8000")
-mcp = FastMCP("Searxng")
+from searxng_client import SearxngClient
 
 
-@mcp.tool
-def hi():
-    return "hello world"
+def create_mcp_server(api_url: str) -> FastMCP:
+    mcp = FastMCP("Searxng")
+    searxng_client = SearxngClient(api_url)
 
+    mcp.tool(searxng_client.search)
 
-def main():
-    mcp.run()
-
-
-if __name__ == "__main__":
-    main()
+    return mcp

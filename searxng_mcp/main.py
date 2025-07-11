@@ -1,11 +1,10 @@
 import os
 from enum import Enum
 from functools import partial
-from inspect import signature
 
 import anyio
 import typer
-from fastmcp import FastMCP
+from server import create_mcp_server
 
 
 class HTTPTransportTypes(Enum):
@@ -15,9 +14,10 @@ class HTTPTransportTypes(Enum):
 
 
 def main():
-    URL = os.environ.get("SEARXNG_URL", "http://localhost:8000")
-    mcp = FastMCP("Searxng")
-    app = typer.Typer(no_args_is_help=True)
+    api_url = os.environ.get("SEARXNG_URL", "http://localhost:8000")
+    mcp = create_mcp_server(api_url)
+
+    app = typer.Typer()
 
     @app.command()
     def stdio(show_banner: bool = True):
@@ -50,6 +50,8 @@ def main():
                 stateless_http=stateless_http,
             )
         )
+
+    app()
 
 
 if __name__ == "__main__":

@@ -16,5 +16,6 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 ENV PATH="/app/.venv/bin:$PATH"
 
-ENTRYPOINT ["python3", "searxng_mcp/server.py"]
+ENTRYPOINT ["python3", "searxng_mcp/main.py"]
 
+EXPOSE 8000
