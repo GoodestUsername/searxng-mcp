@@ -14,7 +14,7 @@ class HTTPTransportTypes(Enum):
 
 
 def main():
-    api_url = os.environ.get("SEARXNG_URL", "http://localhost:8000")
+    api_url = os.environ.get("SEARXNG_URL", "http://localhost:8181")
     mcp = create_mcp_server(api_url)
 
     app = typer.Typer()
