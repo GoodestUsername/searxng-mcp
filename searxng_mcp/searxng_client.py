@@ -5,7 +5,7 @@ from inspect import Parameter, signature
 from io import StringIO
 from typing import Annotated, Any, Callable, Literal
 
-from fastmcp import FastMCP
+from fastmcp import Context, FastMCP
 from fastmcp.exceptions import ToolError
 from fastmcp.tools.tool import ToolResult
 from httpx import AsyncClient
@@ -285,6 +285,7 @@ class SearxngClient:
 
     async def search(
         self,
+        ctx: Context,
         q: Annotated[
             str,
             Field(
