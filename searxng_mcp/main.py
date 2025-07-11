@@ -15,7 +15,7 @@ class HTTPTransportTypes(Enum):
 
 def main():
     api_url = os.environ.get("SEARXNG_URL", "http://localhost:8181")
-    default_path = os.environ.get("PATH", "searxng")
+    default_path = os.environ.get("DEFAULT_PATH", "searxng")
 
     mcp = create_mcp_server(api_url)
 
