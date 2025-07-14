@@ -8,10 +8,12 @@ from pytest_httpx import HTTPXMock
 
 from searxng_mcp.searxng_client import Categories, Engines, Plugins, SearxngClient
 
+MOCK_SEARXNG_URL = "https://mocksearxng.com"
+
 
 @pytest.mark.asyncio
 async def test_full_json_query(httpx_mock: HTTPXMock):
-    client = SearxngClient(api_url="https://mocksearxng.com")
+    client = SearxngClient(api_url=MOCK_SEARXNG_URL)
 
     expected_result = {
         "results": [{"title": "Hello World", "url": "https://example.com"}]
@@ -34,7 +36,7 @@ async def test_full_json_query(httpx_mock: HTTPXMock):
 
     httpx_mock.add_response(
         method="GET",
-        url=URL("https://mocksearxng.com/search", params=params),
+        url=URL(MOCK_SEARXNG_URL + "/search", params=params),
         text=json.dumps(expected_result),
         headers={"Content-Type": "application/json"},
     )
@@ -65,14 +67,14 @@ async def test_full_json_query(httpx_mock: HTTPXMock):
 
 @pytest.mark.asyncio
 async def test_html_fallback_format(httpx_mock: HTTPXMock):
-    client = SearxngClient(api_url="https://mocksearxng.com")
+    client = SearxngClient(api_url=MOCK_SEARXNG_URL)
 
     params = {"q": "fallback test", "format": "html", "pageno": 1}
     html_content = "<html><body><h1>Test</h1></body></html>"
 
     httpx_mock.add_response(
         method="GET",
-        url=URL("https://mocksearxng.com/search", params=params),
+        url=URL(MOCK_SEARXNG_URL + "/search", params=params),
         text=html_content,
         headers={"Content-Type": "text/html"},
     )
@@ -85,13 +87,13 @@ async def test_html_fallback_format(httpx_mock: HTTPXMock):
 
 @pytest.mark.asyncio
 async def test_csv_format(httpx_mock: HTTPXMock):
-    client = SearxngClient(api_url="https://mocksearxng.com")
+    client = SearxngClient(api_url=MOCK_SEARXNG_URL)
     params = {"q": "some csv query", "format": "csv", "pageno": 1}
 
     csv_data = "title,url\nExample Title,https://example.com\n"
     httpx_mock.add_response(
         method="GET",
-        url=URL("https://mocksearxng.com/search", params=params),
+        url=URL(MOCK_SEARXNG_URL + "/search", params=params),
         text=csv_data,
         headers={"Content-Type": "text/html"},
     )
@@ -107,13 +109,13 @@ async def test_csv_format(httpx_mock: HTTPXMock):
 
 @pytest.mark.asyncio
 async def test_minimal_parameters_only(httpx_mock: HTTPXMock):
-    client = SearxngClient(api_url="https://mocksearxng.com")
+    client = SearxngClient(api_url=MOCK_SEARXNG_URL)
     params = {"q": "minimal test", "format": "json", "pageno": 1}
     data = {"results": [{"title": "Minimal", "url": "https://min.example"}]}
 
     httpx_mock.add_response(
         method="GET",
-        url=URL("https://mocksearxng.com/search", params=params),
+        url=URL(MOCK_SEARXNG_URL + "/search", params=params),
         text=json.dumps(data),
         headers={"Content-Type": "text/html"},
     )
@@ -129,14 +131,14 @@ async def test_minimal_parameters_only(httpx_mock: HTTPXMock):
 
 @pytest.mark.asyncio
 async def test_invalid_format_gracefully_fallback(httpx_mock: HTTPXMock):
-    client = SearxngClient(api_url="https://mocksearxng.com")
+    client = SearxngClient(api_url=MOCK_SEARXNG_URL)
 
     fallback_text = "some text fallback from API"
     params = {"q": "weird format", "format": "weird", "pageno": 1}
 
     httpx_mock.add_response(
         method="GET",
-        url=URL("https://mocksearxng.com/search", params=params),
+        url=URL(MOCK_SEARXNG_URL + "/search", params=params),
         text=fallback_text,
         headers={"Content-Type": "text/html"},
     )
@@ -152,12 +154,12 @@ async def test_invalid_format_gracefully_fallback(httpx_mock: HTTPXMock):
 
 @pytest.mark.asyncio
 async def test_invalid_url_raises(httpx_mock: HTTPXMock):
-    client = SearxngClient(api_url="https://mocksearxng.com")
+    client = SearxngClient(api_url=MOCK_SEARXNG_URL)
     params = {"q": "not found", "format": "json", "pageno": 1}
 
     httpx_mock.add_response(
         method="GET",
-        url=URL("https://mocksearxng.com/search", params=params),
+        url=URL(MOCK_SEARXNG_URL + "/search", params=params),
         status_code=404,
         text="Not Found",
         headers={"Content-Type": "text/html"},
@@ -168,7 +170,7 @@ async def test_invalid_url_raises(httpx_mock: HTTPXMock):
 
 @pytest.mark.asyncio
 async def test_network_error(httpx_mock: HTTPXMock):
-    client = SearxngClient(api_url="https://mocksearxng.com")
+    client = SearxngClient(api_url=MOCK_SEARXNG_URL)
 
     def raise_request_error(request):
         raise RequestError("Connection failed", request=request)
