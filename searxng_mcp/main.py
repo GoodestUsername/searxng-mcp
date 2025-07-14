@@ -15,7 +15,7 @@ class HTTPTransportTypes(Enum):
 
 def main():
     api_url = os.environ.get("SEARXNG_URL", "http://host.docker.internal:8181")
-    default_path = os.environ.get("DEFAULT_PATH", "searxng")
+    default_path = os.environ.get("DEFAULT_PATH", "mcp")
 
     mcp = create_mcp_server(api_url)
 

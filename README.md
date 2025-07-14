@@ -24,7 +24,7 @@ Before running the server:
 | Variable     | Default Value          | Description                        |
 |--------------|------------------------|------------------------------------|
 | SEARXNG_URL  | `http://localhost:8181`| URL of the SearxNG instance        |
-| DEFAULT_PATH | `searxng`              | Default path of in the uri if none is provided        |
+| DEFAULT_PATH | `mcp`              | Default path of in the uri if none is provided        |
 
 ### Command Line Interface
 
@@ -62,7 +62,7 @@ docker run -p 8000:8000 mcp/searxng-mcp http --host=0.0.0.0 --port=8000
 {
   "mcpServers": {
     "mcp/searxng": {
-      "url": "http://0.0.0.0:8000/searxng"
+      "url": "http://0.0.0.0:8000/mcp"
     }
   }
 }
