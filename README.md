@@ -108,5 +108,5 @@ The server implements a MCP (Model Communication Protocol) compatible with FastM
 
 - **Returns**:
   - With the exception of JSON, the other formats will be returned in a json under the "results" key as raw text.
-  - The json format will match whatever searxng format uses for the engine specified.
+  - The json format will match whatever searxng format uses for the engine specified. https://docs.searxng.org/dev/result_types/index.html
 
