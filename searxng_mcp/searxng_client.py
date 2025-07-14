@@ -5,7 +5,6 @@ from inspect import Parameter, signature
 from io import StringIO
 from typing import Annotated, Any, Callable, Literal
 
-from fastmcp import Context, FastMCP
 from fastmcp.exceptions import ToolError
 from fastmcp.tools.tool import ToolResult
 from httpx import AsyncClient
@@ -405,6 +404,7 @@ class SearxngClient:
             | None
         ) = None,
     ) -> ToolResult:
+        "Searches query using searxng."
         args = parse_args(self.search, locals())
         client = AsyncClient(base_url=self.api_url)
         response = await client.get("/search", params=args)
@@ -420,4 +420,4 @@ class SearxngClient:
                 return ToolResult(
                     structured_content={"output": reader},
                 )
-        return ToolResult(TextContent(text=response.text, type="text"))
+        return ToolResult(structured_content={"output": response.text})

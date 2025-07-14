@@ -66,6 +66,28 @@ async def test_full_json_query(httpx_mock: HTTPXMock):
 
 
 @pytest.mark.asyncio
+async def test_minimal_parameters_only(httpx_mock: HTTPXMock):
+    client = SearxngClient(api_url=MOCK_SEARXNG_URL)
+    params = {"q": "minimal test", "format": "json", "pageno": 1}
+    data = {"results": [{"title": "Minimal", "url": "https://min.example"}]}
+
+    httpx_mock.add_response(
+        method="GET",
+        url=URL(MOCK_SEARXNG_URL + "/search", params=params),
+        text=json.dumps(data),
+        headers={"Content-Type": "text/html"},
+    )
+
+    result = await client.search(q="minimal test", format="json")
+    assert isinstance(result, ToolResult)
+    if result.structured_content is None:
+        pytest.fail("Structure content is None.")
+
+    assert "results" in result.structured_content
+    assert result.structured_content["results"][0]["title"] == "Minimal"
+
+
+@pytest.mark.asyncio
 async def test_html_fallback_format(httpx_mock: HTTPXMock):
     client = SearxngClient(api_url=MOCK_SEARXNG_URL)
 
@@ -105,28 +127,6 @@ async def test_csv_format(httpx_mock: HTTPXMock):
     rows = json.loads(result.content[0].text)["output"]
     assert rows[0] == ["title", "url"]
     assert rows[1] == ["Example Title", "https://example.com"]
-
-
-@pytest.mark.asyncio
-async def test_minimal_parameters_only(httpx_mock: HTTPXMock):
-    client = SearxngClient(api_url=MOCK_SEARXNG_URL)
-    params = {"q": "minimal test", "format": "json", "pageno": 1}
-    data = {"results": [{"title": "Minimal", "url": "https://min.example"}]}
-
-    httpx_mock.add_response(
-        method="GET",
-        url=URL(MOCK_SEARXNG_URL + "/search", params=params),
-        text=json.dumps(data),
-        headers={"Content-Type": "text/html"},
-    )
-
-    result = await client.search(q="minimal test", format="json")
-    assert isinstance(result, ToolResult)
-    if result.structured_content is None:
-        pytest.fail("Structure content is None.")
-
-    assert "results" in result.structured_content
-    assert result.structured_content["results"][0]["title"] == "Minimal"
 
 
 @pytest.mark.asyncio

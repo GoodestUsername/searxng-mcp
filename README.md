@@ -108,4 +108,5 @@ The server implements a MCP (Model Communication Protocol) compatible with FastM
 
 - **Returns**:
   - Structured JSON, CSV as a list of rows or raw text depending on the format requested.
+  - CSV and raw are returned as json with a single key named "output"
 
