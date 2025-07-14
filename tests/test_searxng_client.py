@@ -133,53 +133,77 @@ async def test_csv_format(httpx_mock: HTTPXMock):
     assert result.structured_content["results"] == csv_data
 
 
-# @pytest.mark.asyncio
-# async def test_invalid_format_gracefully_fallback(httpx_mock: HTTPXMock):
-#     client = SearxngClient(api_url=MOCK_SEARXNG_URL)
+@pytest.mark.asyncio
+async def test_rss_format(httpx_mock: HTTPXMock):
+    client = SearxngClient(api_url=MOCK_SEARXNG_URL)
+    params = {"q": "some rss query", "format": "rss", "pageno": 1}
 
-#     fallback_text = "some text fallback from API"
-#     params = {"q": "weird format", "format": "weird", "pageno": 1}
+    rss_data = """<?xml version="1.0" encoding="UTF-8"?>\n<?xml-stylesheet href="/rss.xsl" type="text/xsl"?>\n<rss version="2.0"\n     xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/"\n     xmlns:atom="http://www.w3.org/2005/Atom">\n  <channel>\n    <title>SearXNG search: naruto</title>\n      <description>Ninjas</description>\n    </item>\n  </channel>\n</rss>"""
 
-#     httpx_mock.add_response(
-#         method="GET",
-#         url=URL(MOCK_SEARXNG_URL + "/search", params=params),
-#         text=fallback_text,
-#         headers={"Content-Type": "text/html"},
-#     )
+    httpx_mock.add_response(
+        method="GET",
+        url=URL(MOCK_SEARXNG_URL + "/search", params=params),
+        text=rss_data,
+        headers={"Content-Type": "text/html"},
+    )
 
-#     result = await client.search(
-#         q="weird format",
-#         format="weird",  # type: ignore
-#     )
-#     assert isinstance(result, ToolResult)
-#     assert isinstance(result.content[0], TextContent)
-#     assert fallback_text in result.content[0].text
+    result = await client.search(q="some rss query", format="rss")
 
+    assert isinstance(result, ToolResult)
+    if result.structured_content is None:
+        pytest.fail("Structure content is None.")
 
-# @pytest.mark.asyncio
-# async def test_invalid_url_raises(httpx_mock: HTTPXMock):
-#     client = SearxngClient(api_url=MOCK_SEARXNG_URL)
-#     params = {"q": "not found", "format": "json", "pageno": 1}
-
-#     httpx_mock.add_response(
-#         method="GET",
-#         url=URL(MOCK_SEARXNG_URL + "/search", params=params),
-#         status_code=404,
-#         text="Not Found",
-#         headers={"Content-Type": "text/html"},
-#     )
-#     with pytest.raises(HTTPStatusError):
-#         await client.search(q="not found", format="json")
+    assert "results" in result.structured_content
+    assert result.structured_content["results"] == rss_data
 
 
-# @pytest.mark.asyncio
-# async def test_network_error(httpx_mock: HTTPXMock):
-#     client = SearxngClient(api_url=MOCK_SEARXNG_URL)
+@pytest.mark.asyncio
+async def test_invalid_format_gracefully_fallback(httpx_mock: HTTPXMock):
+    client = SearxngClient(api_url=MOCK_SEARXNG_URL)
 
-#     def raise_request_error(request):
-#         raise RequestError("Connection failed", request=request)
+    fallback_text = "some text fallback from API"
+    params = {"q": "weird format", "format": "weird", "pageno": 1}
 
-#     httpx_mock.add_callback(raise_request_error)
+    httpx_mock.add_response(
+        method="GET",
+        url=URL(MOCK_SEARXNG_URL + "/search", params=params),
+        text=fallback_text,
+        headers={"Content-Type": "text/html"},
+    )
 
-#     with pytest.raises(RequestError):
-#         await client.search(q="timeout test", format="json")
+    result = await client.search(
+        q="weird format",
+        format="weird",  # type: ignore
+    )
+    assert isinstance(result, ToolResult)
+    assert isinstance(result.content[0], TextContent)
+    assert fallback_text in result.content[0].text
+
+
+@pytest.mark.asyncio
+async def test_invalid_url_raises(httpx_mock: HTTPXMock):
+    client = SearxngClient(api_url=MOCK_SEARXNG_URL)
+    params = {"q": "not found", "format": "json", "pageno": 1}
+
+    httpx_mock.add_response(
+        method="GET",
+        url=URL(MOCK_SEARXNG_URL + "/search", params=params),
+        status_code=404,
+        text="Not Found",
+        headers={"Content-Type": "text/html"},
+    )
+    with pytest.raises(HTTPStatusError):
+        await client.search(q="not found", format="json")
+
+
+@pytest.mark.asyncio
+async def test_network_error(httpx_mock: HTTPXMock):
+    client = SearxngClient(api_url=MOCK_SEARXNG_URL)
+
+    def raise_request_error(request):
+        raise RequestError("Connection failed", request=request)
+
+    httpx_mock.add_callback(raise_request_error)
+
+    with pytest.raises(RequestError):
+        await client.search(q="timeout test", format="json")
