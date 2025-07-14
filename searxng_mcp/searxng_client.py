@@ -1,14 +1,11 @@
-import csv
 import json
 from enum import Enum
 from inspect import Parameter, signature
-from io import StringIO
 from typing import Annotated, Any, Callable, Literal
 
 from fastmcp.exceptions import ToolError
 from fastmcp.tools.tool import ToolResult
 from httpx import AsyncClient
-from mcp.types import TextContent
 from pydantic import Field
 
 
@@ -409,15 +406,10 @@ class SearxngClient:
         client = AsyncClient(base_url=self.api_url)
         response = await client.get("/search", params=args)
         response.raise_for_status()
+
         match format:
             case "json":
                 return ToolResult(
                     structured_content=json.loads(response.text),
                 )
-            case "csv":
-                f = StringIO(response.text)
-                reader = csv.reader(f, delimiter=",")
-                return ToolResult(
-                    structured_content={"output": reader},
-                )
-        return ToolResult(structured_content={"output": response.text})
+        return ToolResult(structured_content={"results": response.text})

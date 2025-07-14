@@ -107,6 +107,6 @@ The server implements a MCP (Model Communication Protocol) compatible with FastM
   - `enabled_engines`, `disabled_engines` (list[Engines], optional): Engines to enable/disable.
 
 - **Returns**:
-  - Structured JSON, CSV as a list of rows or raw text depending on the format requested.
-  - CSV and raw are returned as json with a single key named "output"
+  - With the exception of JSON, the other formats will be returned in a json under the "results" key as raw text.
+  - The json format will match whatever searxng format uses for the engine specified.
 
