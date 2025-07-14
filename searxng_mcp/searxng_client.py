@@ -252,16 +252,18 @@ class Plugins(Enum):
 def parse_args(func: Callable[..., Any], raw_args: dict[str, Any]) -> dict[str, Any]:
     sig = signature(func)
     cleaned = {}
-
     for name, param in sig.parameters.items():
-        if name not in raw_args:
-            continue
-
-        value = raw_args[name]
         is_optional = param.default is not Parameter.empty or getattr(
             param.annotation, "__origin__", None
         ) is type(None)
 
+        if name not in raw_args:
+            if is_optional:
+                continue
+            else:
+                raise ToolError(f"{name!r} is required and cannot be empty.")
+
+        value = raw_args[name]
         is_empty = value in ("", [], None)
 
         if is_empty:
@@ -285,7 +287,6 @@ class SearxngClient:
 
     async def search(
         self,
-        ctx: Context,
         q: Annotated[
             str,
             Field(
