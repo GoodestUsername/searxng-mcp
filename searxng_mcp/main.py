@@ -48,7 +48,7 @@ def main():
                 host=host,
                 port=port,
                 log_level=log_level,
-                path=f"/{path if path != None else default_path}",
+                path=f"/{path if path is not None else default_path}",
                 stateless_http=stateless_http,
             )
         )
